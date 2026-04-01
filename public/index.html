@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KeyDrop — Share Files & Text Instantly</title>
+  <meta name="description" content="Share files and text securely using randomly generated 6-digit access codes. No account required. Auto-expires in 24 hours." />
+  <link rel="stylesheet" href="/styles/main.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗝️</text></svg>" />
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-canvas">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ─── Navbar ─────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="logo">
+        <div class="logo-icon">🗝️</div>
+        <span class="logo-text">KeyDrop</span>
+      </a>
+      <a href="/retrieve" class="nav-link">
+        <span>📥</span> Retrieve Content
+      </a>
+    </div>
+  </nav>
+
+  <!-- ─── Hero ────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Secure · Instant · Ephemeral
+      </div>
+      <h1>Drop it. Share it.<br><span class="gradient-text">Gone in 24 Hours.</span></h1>
+      <p>Share files and text instantly using a unique 6-digit code. No account. No tracking. Auto-deleted after 24 hours.</p>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Digit Code</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">24h</div>
+          <div class="stat-label">Auto Expiry</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">50MB</div>
+          <div class="stat-label">Max File Size</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Accounts Needed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Upload Card ──────────────────────────────────────────────── -->
+  <main>
+    <div class="container">
+      <div class="card">
+
+        <!-- Tab Switcher -->
+        <div class="tab-switcher" role="tablist">
+          <button class="tab-btn active" id="tab-text" role="tab" aria-selected="true" onclick="switchTab('text')">
+            <span>📝</span> Share Text
+          </button>
+          <button class="tab-btn" id="tab-file" role="tab" aria-selected="false" onclick="switchTab('file')">
+            <span>📁</span> Share File
+          </button>
+        </div>
+
+        <!-- Text Panel -->
+        <div id="panel-text">
+          <label class="form-label" for="text-input">Your Message / Code / Data</label>
+          <textarea
+            class="textarea"
+            id="text-input"
+            placeholder="Paste your text, code snippet, password, or any content here…"
+            maxlength="50000"
+          ></textarea>
+          <div style="text-align:right; color: var(--text-muted); font-size: 0.78rem; margin-top: 6px;">
+            <span id="char-count">0</span> / 50,000 characters
+          </div>
+        </div>
+
+        <!-- File Panel -->
+        <div id="panel-file" class="hidden">
+          <label class="form-label">Upload File</label>
+          <div class="drop-zone" id="drop-zone">
+            <input type="file" id="file-input" aria-label="Select file to upload" />
+            <span class="drop-icon">📦</span>
+            <div class="drop-title">Drag & drop your file here</div>
+            <div class="drop-sub">or click to browse — up to 50 MB, any format</div>
+          </div>
+          <div id="file-info" class="file-selected hidden">
+            <span class="file-selected-icon" id="file-emoji">📄</span>
+            <div class="file-selected-info">
+              <div class="file-selected-name" id="file-name-display">—</div>
+              <div class="file-selected-size" id="file-size-display">—</div>
+            </div>
+            <button class="btn btn-secondary" style="padding:8px 14px; font-size:0.8rem;" onclick="clearFile()">✕ Remove</button>
+          </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="upload-error" class="alert alert-error mt-4 hidden"></div>
+
+        <!-- Progress -->
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <!-- Upload Button -->
+        <button class="btn btn-primary" id="upload-btn" onclick="uploadContent()">
+          <span id="upload-btn-text">🚀 Generate Access Code</span>
+        </button>
+
+        <!-- Code Result -->
+        <div class="code-result" id="code-result">
+          <div class="code-card">
+            <div class="code-label">✨ Your Access Code</div>
+            <span class="code-display" id="code-display">——————</span>
+            <div class="code-actions">
+              <button class="btn btn-secondary" onclick="copyCode()" id="copy-btn">
+                📋 Copy Code
+              </button>
+              <a href="/retrieve" class="btn btn-secondary" id="retrieve-link">
+                📥 Go to Retrieve
+              </a>
+            </div>
+            <div class="code-expiry">
+              ⏳ Expires in <strong id="expiry-time" style="color: var(--warning); margin: 0 4px;">24 hours</strong> — share quickly!
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /card -->
+
+      <!-- ─── How It Works ───────────────────────────────────────── -->
+      <section class="how-it-works">
+        <h2 class="section-title">How KeyDrop Works</h2>
+        <p class="section-sub">Three simple steps. No setup required.</p>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-title">Drop Your Content</div>
+            <div class="step-desc">Paste text or select a file (up to 50 MB). Any format is supported.</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-title">Get Your Code</div>
+            <div class="step-desc">A unique 6-character access code is instantly generated for your content.</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-title">Share & Retrieve</div>
+            <div class="step-desc">Share the code with anyone. They enter it on the retrieve page to access or download.</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">4</div>
+            <div class="step-title">Auto-Deleted</div>
+            <div class="step-desc">Content is permanently deleted after 24 hours. No trace left behind.</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ─── Footer ──────────────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <p>🗝️ <strong>KeyDrop</strong> — Secure ephemeral content sharing &nbsp;·&nbsp;
+         Built with Node.js + MongoDB &nbsp;·&nbsp;
+         <a href="/retrieve">Retrieve Content →</a>
+      </p>
+    </div>
+  </footer>
+
+</div><!-- /page-wrapper -->
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Copied to clipboard!</div>
+
+<script src="/scripts/upload.js"></script>
+</body>
+</html>

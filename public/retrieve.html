@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeyDrop — Retrieve Content</title>
+    <meta name="description" content="Enter your 6-digit KeyDrop code to retrieve shared text or download a file." />
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗝️</text></svg>" />
+</head>
+
+<body>
+
+    <!-- Animated Background -->
+    <div class="bg-canvas">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="page-wrapper">
+
+        <!-- ─── Navbar ─────────────────────────────────────────────────── -->
+        <nav class="navbar">
+            <div class="container">
+                <a href="/" class="logo">
+                    <div class="logo-icon">🗝️</div>
+                    <span class="logo-text">KeyDrop</span>
+                </a>
+                <a href="/" class="nav-link">
+                    <span>⬆️</span> Share Content
+                </a>
+            </div>
+        </nav>
+
+        <!-- ─── Hero ────────────────────────────────────────────────────── -->
+        <section class="retrieve-hero">
+            <div class="container">
+                <div class="hero-badge">
+                    <span class="dot"></span>
+                    Enter Code · Retrieve Instantly
+                </div>
+                <h1>Enter Your <span class="gradient-text">Access Code</span></h1>
+                <p>Type or paste the 6-character code to retrieve text or download the shared file.</p>
+            </div>
+        </section>
+
+        <!-- ─── Retrieve Card ─────────────────────────────────────────── -->
+        <main>
+            <div class="container">
+                <div class="card">
+
+                    <label class="form-label" style="text-align:center; display:block; margin-bottom:20px;">
+                        6-Character Access Code
+                    </label>
+
+                    <!-- OTP Input -->
+                    <div class="otp-container" id="otp-container">
+                        <input class="otp-box" id="otp-0" maxlength="1" type="text" inputmode="text" autocomplete="off"
+                            aria-label="Code digit 1" />
+                        <input class="otp-box" id="otp-1" maxlength="1" type="text" inputmode="text" autocomplete="off"
+                            aria-label="Code digit 2" />
+                        <input class="otp-box" id="otp-2" maxlength="1" type="text" inputmode="text" autocomplete="off"
+                            aria-label="Code digit 3" />
+                        <input class="otp-box" id="otp-3" maxlength="1" type="text" inputmode="text" autocomplete="off"
+                            aria-label="Code digit 4" />
+                        <input class="otp-box" id="otp-4" maxlength="1" type="text" inputmode="text" autocomplete="off"
+                            aria-label="Code digit 5" />
+                        <input class="otp-box" id="otp-5" maxlength="1" type="text" inputmode="text" autocomplete="off"
+                            aria-label="Code digit 6" />
+                    </div>
+
+                    <!-- Error -->
+                    <div id="retrieve-error" class="alert alert-error hidden"></div>
+
+                    <!-- Retrieve Button -->
+                    <button class="btn btn-primary" id="retrieve-btn" onclick="retrieveContent()">
+                        <span id="retrieve-btn-text">🔍 Retrieve Content</span>
+                    </button>
+
+                    <!-- Result Panel -->
+                    <div class="result-panel" id="result-panel">
+
+                        <!-- Header row -->
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+                            <div>
+                                <span class="result-type-badge badge-text" id="type-badge">📝 Text</span>
+                            </div>
+                            <div style="font-size:0.8rem; color: var(--text-muted);" id="expiry-info">—</div>
+                        </div>
+
+                        <!-- Text Result -->
+                        <div id="text-result" class="hidden">
+                            <pre class="text-preview" id="text-content"></pre>
+                            <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+                                <button class="btn btn-secondary" onclick="copyResultText()"
+                                    style="flex:1; min-width:140px;">
+                                    📋 Copy Text
+                                </button>
+                                <button class="btn btn-secondary" onclick="downloadText()"
+                                    style="flex:1; min-width:140px;">
+                                    💾 Save as .txt
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- File Result -->
+                        <div id="file-result" class="hidden">
+                            <div class="file-info-card">
+                                <div class="file-icon-big" id="result-file-icon">📄</div>
+                                <div class="file-meta">
+                                    <div class="file-name" id="result-filename">—</div>
+                                    <div class="file-size-text" id="result-filesize">—</div>
+                                    <div class="file-mime" id="result-mimetype">—</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success" id="download-btn" onclick="downloadFile()"
+                                style="width:100%; margin-top:16px;">
+                                ⬇️ Download File
+                            </button>
+                        </div>
+
+                        <!-- Divider -->
+                        <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
+
+                        <!-- Reset -->
+                        <div class="text-center">
+                            <button class="btn btn-secondary" onclick="resetRetrieve()"
+                                style="padding: 10px 24px; font-size:0.85rem;">
+                                🔄 Retrieve Another
+                            </button>
+                        </div>
+
+                    </div><!-- /result-panel -->
+
+                </div><!-- /card -->
+
+                <!-- Tips -->
+                <div style="margin-top: 28px; margin-bottom: 60px;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+                        <div class="step-card" style="padding: 18px;">
+                            <div style="font-size:1.4rem; margin-bottom:8px;">⏰</div>
+                            <div class="step-title" style="font-size:0.88rem;">24-Hour Limit</div>
+                            <div class="step-desc">Codes expire after 24 hours. Retrieve promptly.</div>
+                        </div>
+                        <div class="step-card" style="padding: 18px;">
+                            <div style="font-size:1.4rem; margin-bottom:8px;">🔠</div>
+                            <div class="step-title" style="font-size:0.88rem;">Case Insensitive</div>
+                            <div class="step-desc">Codes are not case-sensitive. A1B2C3 = a1b2c3.</div>
+                        </div>
+                        <div class="step-card" style="padding: 18px;">
+                            <div style="font-size:1.4rem; margin-bottom:8px;">🔒</div>
+                            <div class="step-title" style="font-size:0.88rem;">No Account Needed</div>
+                            <div class="step-desc">Enter the code — no login or registration required.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- ─── Footer ──────────────────────────────────────────────────── -->
+        <footer>
+            <div class="container">
+                <p>🗝️ <strong>KeyDrop</strong> — Secure ephemeral content sharing &nbsp;·&nbsp;
+                    <a href="/">Share Content →</a>
+                </p>
+            </div>
+        </footer>
+
+    </div><!-- /page-wrapper -->
+
+    <!-- Toast -->
+    <div class="toast" id="toast">✅ Copied to clipboard!</div>
+
+    <script src="/scripts/retrieve.js"></script>
+</body>
+
+</html>
