@@ -9,37 +9,40 @@ const startCleanupJob = require('./jobs/cleanup');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ─── Connect to MongoDB ──────────────────────────────────────────────────────
-connectDB();
+// Connect DB and start server
+connectDB().then(() => {
 
-// ─── Middleware ──────────────────────────────────────────────────────────────
-app.use(cors());
-app.use(express.json({ limit: '60mb' }));
-app.use(express.urlencoded({ extended: true, limit: '60mb' }));
+    // Middleware
+    app.use(cors());
+    app.use(express.json({ limit: '60mb' }));
+    app.use(express.urlencoded({ extended: true, limit: '60mb' }));
 
-// ─── Serve Static Frontend ───────────────────────────────────────────────────
-app.use(express.static(path.join(__dirname, 'public')));
+    // Static frontend
+    app.use(express.static(path.join(__dirname, 'public')));
 
-// ─── API Routes ──────────────────────────────────────────────────────────────
-app.use('/api', apiRoutes);
+    // API routes
+    app.use('/api', apiRoutes);
 
-// ─── Fallback Routes ─────────────────────────────────────────────────────────
-app.get('/retrieve', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'retrieve.html'));
-});
+    // Routes
+    app.get('/retrieve', (req, res) => {
+        res.sendFile(path.join(__dirname, 'public', 'retrieve.html'));
+    });
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    });
 
-// ─── Start Cleanup Cron Job ──────────────────────────────────────────────────
-startCleanupJob();
+    // Cron
+    startCleanupJob();
 
-// ─── Start Server ─────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-    console.log(`\n🚀 KeyDrop server running at http://localhost:${PORT}`);
-    console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🗄️  MongoDB URI: ${process.env.MONGODB_URI}\n`);
+    // Start server
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+        console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+
+}).catch(err => {
+    console.error("❌ DB connection failed:", err);
 });
 
 module.exports = app;
