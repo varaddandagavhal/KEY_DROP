@@ -225,7 +225,7 @@ function setLoading(on) {
     btn.disabled = on;
     text.innerHTML = on
         ? '<span class="spinner"></span> Retrieving…'
-        : '🔍 Retrieve Content';
+        : 'Retrieve Content';
 }
 
 function showError(msg) {

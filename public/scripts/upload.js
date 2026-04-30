@@ -202,7 +202,7 @@ function setLoading(on) {
     btn.disabled = on;
     text.innerHTML = on
         ? '<span class="spinner"></span> Uploading…'
-        : '🚀 Generate Access Code';
+        : 'Generate Access Code';
 }
 
 function showError(msg) {
