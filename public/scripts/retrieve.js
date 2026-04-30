@@ -182,6 +182,30 @@ function downloadText() {
     URL.revokeObjectURL(url);
 }
 
+// ── Delete Data ───────────────────────────────────────────────────────
+async function deleteCurrentData() {
+    if (!currentCode) return;
+    if (!confirm('Are you sure you want to delete this content forever?')) return;
+
+    const btn = document.getElementById('delete-data-btn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Deleting...';
+
+    try {
+        const res = await fetch(`/api/delete/${currentCode}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Deletion failed');
+
+        showToast('🗑️ Data deleted permanently!');
+        resetRetrieve();
+    } catch (err) {
+        showError(err.message);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
 // ── Reset ─────────────────────────────────────────────────────────────
 function resetRetrieve() {
     otpBoxes.forEach(b => { b.value = ''; b.classList.remove('filled'); });

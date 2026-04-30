@@ -169,6 +169,32 @@ function copyCode() {
     navigator.clipboard.writeText(generatedCode).then(() => showToast('✅ Code copied!'));
 }
 
+// ── Delete ────────────────────────────────────────────────────────────
+async function deleteCurrentDrop() {
+    if (!generatedCode) return;
+    if (!confirm('Are you sure you want to delete this data? This cannot be undone.')) return;
+
+    const btn = document.getElementById('delete-btn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Deleting...';
+
+    try {
+        const res = await fetch(`/api/delete/${generatedCode}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Deletion failed');
+
+        showToast('🗑️ Data deleted successfully!');
+        hideCodeResult();
+        if (currentTab === 'text') textInput.value = '';
+        else clearFile();
+    } catch (err) {
+        showError(err.message);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────
 function setLoading(on) {
     const btn = document.getElementById('upload-btn');

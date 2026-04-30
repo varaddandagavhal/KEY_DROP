@@ -75,7 +75,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             success: true,
             code,
             type,
-            expiresIn: 1440,           // minutes
+            expiresIn: 60,           // 60 minutes
             expiresAt: content.expiresAt
         });
 
@@ -173,6 +173,29 @@ router.get('/status/:code', async (req, res) => {
         return res.status(200).json({ active: true, type: content.type, expiresAt: content.expiresAt });
     } catch (err) {
         return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// ─── DELETE /api/delete/:code ─────────────────────────────────────────
+router.delete('/delete/:code', async (req, res) => {
+    try {
+        const code = req.params.code.toUpperCase().trim();
+        const content = await Content.findOne({ code });
+
+        if (!content) {
+            return res.status(404).json({ error: 'Content already deleted or not found' });
+        }
+
+        if (content.gridfsId) {
+            await deleteFromGridFS(getBucket(), content.gridfsId);
+        }
+
+        await Content.deleteOne({ code });
+
+        return res.status(200).json({ success: true, message: 'Content deleted successfully' });
+    } catch (err) {
+        console.error('Delete error:', err);
+        return res.status(500).json({ error: 'Failed to delete content' });
     }
 });
 

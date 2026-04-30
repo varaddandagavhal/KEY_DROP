@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KeyDrop — Share Files & Text Instantly</title>
-  <meta name="description" content="Share files and text securely using randomly generated 6-digit access codes. No account required. Auto-expires in 24 hours." />
+  <meta name="description" content="Share files and text securely using randomly generated 6-digit access codes. No account required. Auto-expires in 1 hour." />
   <link rel="stylesheet" href="/styles/main.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗝️</text></svg>" />
 </head>
@@ -39,8 +39,8 @@
         <span class="dot"></span>
         Secure · Instant · Ephemeral
       </div>
-      <h1>Drop it. Share it.<br><span class="gradient-text">Gone in 24 Hours.</span></h1>
-      <p>Share files and text instantly using a unique 6-digit code. No account. No tracking. Auto-deleted after 24 hours.</p>
+      <h1>Drop it. Share it.<br><span class="gradient-text">Gone in 1 Hour.</span></h1>
+      <p>Share files and text instantly using a unique 6-digit code. No account. No tracking. Auto-deleted after 1 hour.</p>
 
       <div class="stats-row">
         <div class="stat-item">
@@ -48,7 +48,7 @@
           <div class="stat-label">Digit Code</div>
         </div>
         <div class="stat-item">
-          <div class="stat-value">24h</div>
+          <div class="stat-value">1h</div>
           <div class="stat-label">Auto Expiry</div>
         </div>
         <div class="stat-item">
@@ -138,7 +138,12 @@
               </a>
             </div>
             <div class="code-expiry">
-              ⏳ Expires in <strong id="expiry-time" style="color: var(--warning); margin: 0 4px;">24 hours</strong> — share quickly!
+              ⏳ Expires in <strong id="expiry-time" style="color: var(--warning); margin: 0 4px;">1 hour</strong> — share quickly!
+            </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+               <button class="btn btn-error" onclick="deleteCurrentDrop()" id="delete-btn" style="width: 100%; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                 🗑️ Delete Data Now
+               </button>
             </div>
           </div>
         </div>
@@ -168,7 +173,7 @@
           <div class="step-card">
             <div class="step-num">4</div>
             <div class="step-title">Auto-Deleted</div>
-            <div class="step-desc">Content is permanently deleted after 24 hours. No trace left behind.</div>
+            <div class="step-desc">Content is permanently deleted after 1 hour. No trace left behind.</div>
           </div>
         </div>
       </section>
