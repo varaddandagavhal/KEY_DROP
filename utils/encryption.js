@@ -2,6 +2,13 @@ const crypto = require('crypto');
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16;
+
+if (!process.env.ENCRYPTION_KEY) {
+    console.error('❌ CRITICAL ERROR: ENCRYPTION_KEY is missing from environment variables.');
+    console.error('Please add ENCRYPTION_KEY to your .env or deployment platform (e.g., Render).');
+    process.exit(1);
+}
+
 const KEY = Buffer.from(process.env.ENCRYPTION_KEY, 'hex');
 
 if (KEY.length !== 32) {
