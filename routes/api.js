@@ -5,6 +5,14 @@ const multer = require('multer');
 const { Readable } = require('stream');
 const Content = require('../models/Content');
 const { getBucket } = require('../config/db');
+const { 
+    encryptText, 
+    decryptText, 
+    createEncryptionStream, 
+    createDecryptionStream, 
+    IV_LENGTH 
+} = require('../utils/encryption');
+const crypto = require('crypto');
 
 // Multer: memory storage — we pipe the buffer into GridFS manually
 const upload = multer({
@@ -13,14 +21,24 @@ const upload = multer({
 });
 
 // ── Helper: stream a Buffer into GridFS ──────────────────────────────
-function uploadToGridFS(bucket, buffer, filename, mimetype) {
+// ── Helper: stream a Buffer into GridFS with encryption ─────────────
+function uploadEncryptedToGridFS(bucket, buffer, filename, mimetype) {
     return new Promise((resolve, reject) => {
+        const iv = crypto.randomBytes(IV_LENGTH);
+        const cipher = createEncryptionStream(iv);
         const readable = Readable.from(buffer);
         const uploadStream = bucket.openUploadStream(filename, {
             contentType: mimetype
         });
-        readable.pipe(uploadStream)
-            .on('finish', () => resolve(uploadStream.id))
+
+        readable.pipe(cipher).pipe(uploadStream)
+            .on('finish', () => {
+                resolve({
+                    gridfsId: uploadStream.id,
+                    iv: iv.toString('hex'),
+                    authTag: cipher.getAuthTag().toString('hex')
+                });
+            })
             .on('error', reject);
     });
 }
@@ -48,14 +66,17 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             if (!text || !text.trim()) {
                 return res.status(400).json({ error: 'text field is required' });
             }
-            contentData.text = text.trim();
+            const encrypted = encryptText(text.trim());
+            contentData.text = encrypted.encryptedText;
+            contentData.iv = encrypted.iv;
+            contentData.authTag = encrypted.authTag;
 
         } else {
             if (!req.file) {
                 return res.status(400).json({ error: 'file is required' });
             }
             const bucket = getBucket();
-            const gridfsId = await uploadToGridFS(
+            const { gridfsId, iv, authTag } = await uploadEncryptedToGridFS(
                 bucket,
                 req.file.buffer,
                 req.file.originalname,
@@ -66,6 +87,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             contentData.mimetype = req.file.mimetype;
             contentData.filesize = req.file.size;
             contentData.gridfsId = gridfsId;
+            contentData.iv = iv;
+            contentData.authTag = authTag;
         }
 
         const content = new Content(contentData);
@@ -110,7 +133,17 @@ router.get('/retrieve/:code', async (req, res) => {
         };
 
         if (content.type === 'text') {
-            response.text = content.text;
+            if (!content.iv) {
+                // Fallback for old unencrypted data
+                response.text = content.text;
+            } else {
+                try {
+                    response.text = decryptText(content.text, content.iv, content.authTag);
+                } catch (err) {
+                    console.error('Decryption failed:', err);
+                    return res.status(500).json({ error: 'Failed to decrypt content' });
+                }
+            }
         } else {
             response.filename = content.filename;
             response.mimetype = content.mimetype;
@@ -153,8 +186,20 @@ router.get('/download/:code', async (req, res) => {
         const downloadStream = bucket.openDownloadStream(
             new mongoose.Types.ObjectId(content.gridfsId)
         );
+
         downloadStream.on('error', () => res.status(404).json({ error: 'File data not found' }));
-        downloadStream.pipe(res);
+
+        if (!content.iv) {
+            // Fallback for old unencrypted files
+            downloadStream.pipe(res);
+        } else {
+            const decipher = createDecryptionStream(
+                Buffer.from(content.iv, 'hex'),
+                Buffer.from(content.authTag, 'hex')
+            );
+            // Pipe: GridFS -> Decryption -> Response
+            downloadStream.pipe(decipher).pipe(res);
+        }
 
     } catch (err) {
         console.error('Download error:', err);

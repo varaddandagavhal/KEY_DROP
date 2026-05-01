@@ -57,6 +57,15 @@ const contentSchema = new mongoose.Schema({
     downloadCount: {
         type: Number,
         default: 0
+    },
+    // ── Encryption fields ───────────────────────────────────────
+    iv: {
+        type: String,
+        default: null
+    },
+    authTag: {
+        type: String,
+        default: null
     }
 });
 
