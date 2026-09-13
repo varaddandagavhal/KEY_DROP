@@ -5,6 +5,13 @@
 let currentCode = null;
 let currentResult = null;
 
+fetch('/api/visits')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('visit-count').textContent = data.visits.toLocaleString();
+    })
+    .catch(() => { });
+
 // ── OTP Input Wiring ─────────────────────────────────────────────────
 const otpBoxes = Array.from({ length: 6 }, (_, i) => document.getElementById(`otp-${i}`));
 

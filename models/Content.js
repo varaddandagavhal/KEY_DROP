@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 /**
  * Content schema stores metadata for both text and file drops.
  * - Text content is stored directly in the `text` field.
- * - File content is stored in MongoDB GridFS; only the GridFS file ID is stored here.
+ * - File content is stored in private S3; only the S3 object key is stored here.
  * This sidesteps the 16 MB BSON document limit for files.
  */
 const contentSchema = new mongoose.Schema({
@@ -23,7 +23,7 @@ const contentSchema = new mongoose.Schema({
         type: String,
         default: null
     },
-    // ── File metadata (actual data lives in GridFS) ──────────────
+    // ── File metadata (actual data lives in S3) ───────────────────
     filename: {
         type: String,
         default: null
@@ -40,8 +40,8 @@ const contentSchema = new mongoose.Schema({
         type: Number,
         default: null
     },
-    gridfsId: {           // ObjectId of the GridFS file
-        type: mongoose.Schema.Types.ObjectId,
+    s3Key: {              // Private S3 object key
+        type: String,
         default: null
     },
     // ── Metadata ────────────────────────────────────────────────

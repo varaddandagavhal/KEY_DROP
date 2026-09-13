@@ -6,6 +6,13 @@ let currentTab = 'text';
 let selectedFile = null;
 let generatedCode = null;
 
+fetch('/api/visits')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('visit-count').textContent = data.visits.toLocaleString();
+    })
+    .catch(() => { });
+
 // ── Tab Switching ───────────────────────────────────────────────────
 function switchTab(tab) {
     currentTab = tab;

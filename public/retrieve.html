@@ -1,188 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KeyDrop — Retrieve Content</title>
-    <meta name="description" content="Enter your 6-digit KeyDrop code to retrieve shared text or download a file." />
-    <link rel="stylesheet" href="/styles/main.css" />
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗝️</text></svg>" />
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KeyDrop | Retrieve a drop</title><meta name="description" content="Retrieve a temporary KeyDrop message or file with an access code." />
+  <link rel="stylesheet" href="/styles/main.css" />
 </head>
-
 <body>
-
-    <!-- Animated Background -->
-    <div class="bg-canvas">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
-
-    <div class="page-wrapper">
-
-        <!-- ─── Navbar ─────────────────────────────────────────────────── -->
-        <nav class="navbar">
-            <div class="container">
-                <a href="/" class="logo">
-                    <img src="/logo.png" alt="KeyDrop Logo" class="logo-img" style="height: 32px; width: auto; border-radius: 4px;">
-                    <span class="logo-text">KeyDrop</span>
-                </a>
-                <a href="/" class="nav-link">
-                    Share Content
-                </a>
-            </div>
-        </nav>
-
-        <!-- ─── Hero ────────────────────────────────────────────────────── -->
-        <section class="retrieve-hero">
-            <div class="container">
-                <div class="hero-badge">
-                    <span class="dot"></span>
-                    Enter Code · Retrieve Instantly
-                </div>
-                <h1>Enter Your <span class="gradient-text">Access Code</span></h1>
-                <p>Type or paste the 6-character code to retrieve text or download the shared file.</p>
-            </div>
-        </section>
-
-        <!-- ─── Retrieve Card ─────────────────────────────────────────── -->
-        <main>
-            <div class="container">
-                <div class="card">
-
-                    <label class="form-label" style="text-align:center; display:block; margin-bottom:20px;">
-                        6-Character Access Code
-                    </label>
-
-                    <!-- OTP Input -->
-                    <div class="otp-container" id="otp-container">
-                        <input class="otp-box" id="otp-0" maxlength="1" type="text" inputmode="text" autocomplete="off"
-                            aria-label="Code digit 1" />
-                        <input class="otp-box" id="otp-1" maxlength="1" type="text" inputmode="text" autocomplete="off"
-                            aria-label="Code digit 2" />
-                        <input class="otp-box" id="otp-2" maxlength="1" type="text" inputmode="text" autocomplete="off"
-                            aria-label="Code digit 3" />
-                        <input class="otp-box" id="otp-3" maxlength="1" type="text" inputmode="text" autocomplete="off"
-                            aria-label="Code digit 4" />
-                        <input class="otp-box" id="otp-4" maxlength="1" type="text" inputmode="text" autocomplete="off"
-                            aria-label="Code digit 5" />
-                        <input class="otp-box" id="otp-5" maxlength="1" type="text" inputmode="text" autocomplete="off"
-                            aria-label="Code digit 6" />
-                    </div>
-
-                    <!-- Error -->
-                    <div id="retrieve-error" class="alert alert-error hidden"></div>
-
-                    <!-- Retrieve Button -->
-                    <button class="btn btn-primary" id="retrieve-btn" onclick="retrieveContent()">
-                        <span id="retrieve-btn-text">Retrieve Content</span>
-                    </button>
-
-                    <!-- Result Panel -->
-                    <div class="result-panel" id="result-panel">
-
-                        <!-- Header row -->
-                        <div
-                            style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
-                            <div>
-                                <span class="result-type-badge badge-text" id="type-badge">📝 Text</span>
-                            </div>
-                            <div style="font-size:0.8rem; color: var(--text-muted);" id="expiry-info">—</div>
-                        </div>
-
-                        <!-- Text Result -->
-                        <div id="text-result" class="hidden">
-                            <pre class="text-preview" id="text-content"></pre>
-                            <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
-                                <button class="btn btn-secondary" onclick="copyResultText()"
-                                    style="flex:1; min-width:140px;">
-                                    📋 Copy Text
-                                </button>
-                                <button class="btn btn-secondary" onclick="downloadText()"
-                                    style="flex:1; min-width:140px;">
-                                    💾 Save as .txt
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- File Result -->
-                        <div id="file-result" class="hidden">
-                            <div class="file-info-card">
-                                <div class="file-icon-big" id="result-file-icon">📄</div>
-                                <div class="file-meta">
-                                    <div class="file-name" id="result-filename">—</div>
-                                    <div class="file-size-text" id="result-filesize">—</div>
-                                    <div class="file-mime" id="result-mimetype">—</div>
-                                </div>
-                            </div>
-                            <button class="btn btn-success" id="download-btn" onclick="downloadFile()"
-                                style="width:100%; margin-top:16px;">
-                                ⬇️ Download File
-                            </button>
-                        </div>
-
-                        <!-- Divider -->
-                        <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
-
-                        <!-- Reset -->
-                        <div class="text-center">
-                            <button class="btn btn-secondary" onclick="resetRetrieve()"
-                                style="padding: 10px 24px; font-size:0.85rem;">
-                                🔄 Retrieve Another
-                            </button>
-                        </div>
-
-                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
-                           <button class="btn btn-error" onclick="deleteCurrentData()" id="delete-data-btn" style="width: 100%; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
-                             🗑️ Delete This Data Permanently
-                           </button>
-                        </div>
-
-                    </div><!-- /result-panel -->
-
-                </div><!-- /card -->
-
-                <!-- Tips -->
-                <div style="margin-top: 28px; margin-bottom: 60px;">
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
-                        <div class="step-card" style="padding: 18px;">
-                            <div style="font-size:1.4rem; margin-bottom:8px;">⏰</div>
-                            <div class="step-title" style="font-size:0.88rem;">1-Hour Limit</div>
-                            <div class="step-desc">Codes expire after 1 hour. Retrieve promptly.</div>
-                        </div>
-                        <div class="step-card" style="padding: 18px;">
-                            <div style="font-size:1.4rem; margin-bottom:8px;">🔠</div>
-                            <div class="step-title" style="font-size:0.88rem;">Case Insensitive</div>
-                            <div class="step-desc">Codes are not case-sensitive. A1B2C3 = a1b2c3.</div>
-                        </div>
-                        <div class="step-card" style="padding: 18px;">
-                            <div style="font-size:1.4rem; margin-bottom:8px;">🔒</div>
-                            <div class="step-title" style="font-size:0.88rem;">No Account Needed</div>
-                            <div class="step-desc">Enter the code — no login or registration required.</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </main>
-
-        <!-- ─── Footer ──────────────────────────────────────────────────── -->
-        <footer>
-            <div class="container">
-                <p>🗝️ <strong>KeyDrop</strong> — Secure ephemeral content sharing &nbsp;·&nbsp;
-                    <a href="/">Share Content →</a>
-                </p>
-            </div>
-        </footer>
-
-    </div><!-- /page-wrapper -->
-
-    <!-- Toast -->
-    <div class="toast" id="toast">✅ Copied to clipboard!</div>
-
-    <script src="/scripts/retrieve.js"></script>
+  <div class="site-shell">
+    <header class="site-header"><a href="/" class="brand"><span class="brand-mark">K</span><span>KeyDrop</span></a><a href="/" class="header-link">Create a drop <span aria-hidden="true">&#8594;</span></a></header>
+    <main>
+      <section class="intro retrieve-intro layout-wide"><div class="eyebrow"><span class="status-dot"></span>Access a private drop</div><h1>Enter the code.<br /><em>Get what you need.</em></h1><p class="intro-copy">Drop codes are case-insensitive and expire automatically after one hour.</p></section>
+      <section class="workspace retrieve-workspace layout-wide"><div class="workspace-heading"><div><p class="kicker">Retrieve</p><h2>Six-character access code</h2></div><span class="expiry-note">No account required</span></div>
+        <div class="otp-container" id="otp-container"><input class="otp-box" id="otp-0" maxlength="1" type="text" inputmode="text" autocomplete="off" aria-label="Code character 1" /><input class="otp-box" id="otp-1" maxlength="1" type="text" inputmode="text" autocomplete="off" aria-label="Code character 2" /><input class="otp-box" id="otp-2" maxlength="1" type="text" inputmode="text" autocomplete="off" aria-label="Code character 3" /><input class="otp-box" id="otp-3" maxlength="1" type="text" inputmode="text" autocomplete="off" aria-label="Code character 4" /><input class="otp-box" id="otp-4" maxlength="1" type="text" inputmode="text" autocomplete="off" aria-label="Code character 5" /><input class="otp-box" id="otp-5" maxlength="1" type="text" inputmode="text" autocomplete="off" aria-label="Code character 6" /></div>
+        <div id="retrieve-error" class="alert alert-error hidden"></div><button class="btn btn-primary" id="retrieve-btn" onclick="retrieveContent()"><span id="retrieve-btn-text">Retrieve content</span><span aria-hidden="true">&#8594;</span></button>
+        <div class="result-panel" id="result-panel"><div class="result-heading"><div><p class="kicker">Drop found</p><h3 id="type-badge">Message</h3></div><span class="expiry-note" id="expiry-info">-</span></div><div id="text-result" class="hidden"><pre class="text-preview" id="text-content"></pre><div class="code-actions"><button class="btn btn-secondary" onclick="copyResultText()">Copy text</button><button class="btn btn-secondary" onclick="downloadText()">Save as .txt</button></div></div><div id="file-result" class="hidden"><div class="file-info-card"><div class="file-icon-big" id="result-file-icon">FILE</div><div class="file-meta"><div class="file-name" id="result-filename">-</div><div class="file-size-text" id="result-filesize">-</div><div class="file-mime" id="result-mimetype">-</div></div></div><button class="btn btn-primary" id="download-btn" onclick="downloadFile()">Download file <span aria-hidden="true">&#8595;</span></button></div><div class="result-footer"><button class="text-button" onclick="resetRetrieve()">Retrieve another</button><button class="danger-button" onclick="deleteCurrentData()" id="delete-data-btn">Delete permanently</button></div></div>
+      </section>
+      <section class="note-strip layout-wide"><span class="note-mark">i</span><p><strong>Keep the code private.</strong> Anyone who has it can retrieve the shared content while it is active.</p></section>
+    </main>
+    <footer class="site-footer"><span>KeyDrop</span><span>Temporary sharing, kept simple.</span><span>Visits <strong id="visit-count">300</strong></span><a href="/">Create a drop &#8594;</a></footer>
+  </div>
+  <div class="toast" id="toast">Copied to clipboard</div><script src="/scripts/retrieve.js"></script>
 </body>
-
 </html>

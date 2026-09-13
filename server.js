@@ -5,6 +5,7 @@ const path = require('path');
 const { connectDB } = require('./config/db');
 const apiRoutes = require('./routes/api');
 const startCleanupJob = require('./jobs/cleanup');
+const VisitorCounter = require('./models/VisitorCounter');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,24 @@ connectDB().then(() => {
     app.use(express.static(path.join(__dirname, 'public')));
 
     // API routes
+    app.get('/api/visits', async (req, res) => {
+        try {
+            const counter = await VisitorCounter.findOneAndUpdate(
+                { name: 'site-visits' },
+                { $inc: { count: 1 } },
+                {
+                    new: true,
+                    upsert: true,
+                    setDefaultsOnInsert: true
+                }
+            );
+
+            return res.json({ visits: counter.count });
+        } catch (error) {
+            console.error('Visit counter error:', error);
+            return res.status(500).json({ error: 'Could not update visit count' });
+        }
+    });
     app.use('/api', apiRoutes);
 
     // Routes
